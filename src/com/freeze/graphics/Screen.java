@@ -1,5 +1,7 @@
 package com.freeze.graphics;
 
+import java.util.Random;
+
 /**
  *
  * @author Bernd Fritz
@@ -10,15 +12,23 @@ public class Screen
     private int height;
     
     public int[] pixels;
+    public int[] tiles = new int[64 * 64];
+
+    private Random random = new Random();
     
-    int time = 0;
-    int counter = 0;
     
     public Screen(int width, int height)
     {
         this.width = width;
         this.height = height;
         pixels = new int[width * height];
+        
+        for(int i = 0; i < 64*64; i++)
+        {
+            tiles[i] = random.nextInt(0xffffff);
+        }
+        
+        
     }
     
     public void clear()
@@ -31,17 +41,14 @@ public class Screen
     
     public void render()
     {
-        counter++;
-        if(counter % 100 == 0)
-        {
-            time++;
-        }
-        
         for(int y = 0; y < this.height; y++)
         {
+            if(y < 0 || y >= this.height) break;
             for(int x = 0; x < this.width; x++)
             {
-                pixels[time + time * width] = 0xff00ff;
+                if(x < 0 || x >= this.width) break;
+                int tileIndex = (x >> 4 ) + (y >> 4) * 64;
+                pixels[x + y * width] = tiles[tileIndex];
             }
         }
     }
