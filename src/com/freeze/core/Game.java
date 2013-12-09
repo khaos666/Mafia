@@ -23,6 +23,7 @@ implements Runnable
     public static int WIDTH = 300;
     public static int HEIGHT = WIDTH / 16 * 9;
     public static int SCALE = 3;
+    public static String GAMETITLE = "Mafia Game";
     
     private boolean running = false;
     
@@ -66,14 +67,37 @@ implements Runnable
     @Override
     public void run()
     {
+        long lastTime = System.nanoTime();
+        long timer = System.currentTimeMillis();
+        final double ns = 1000000000.0 / 60.0;
+        double delta = 0;
         
-        
-        
+        int frames = 0;
+        int ticks = 0;
         
         while(running)
         {
-            tick();
+            long now = System.nanoTime();
+            delta += (now - lastTime) / ns;
+            lastTime = now;
+            
+            while(delta >= 1)
+            {
+                tick();
+                ticks++;
+                delta--;
+            }
+            
             render();
+            frames++;
+            
+            if(System.currentTimeMillis() - timer > 1000)
+            {
+                timer += 1000;
+                frame.setTitle(GAMETITLE + " | " + ticks + " ups, " + frames + " fps");
+                ticks = 0;
+                frames = 0;
+            }
         }
     }
     
@@ -81,7 +105,7 @@ implements Runnable
     {
         Game game = new Game();
         game.frame.setResizable(false);
-        game.frame.setTitle("Mafia Game");
+        game.frame.setTitle(GAMETITLE);
         game.frame.add(game);
         game.frame.pack();
         game.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
